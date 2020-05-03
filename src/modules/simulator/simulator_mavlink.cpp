@@ -327,7 +327,18 @@ void Simulator::handle_message(const mavlink_message_t *msg)
 	case MAVLINK_MSG_ID_HIL_STATE_QUATERNION:
 		handle_message_hil_state_quaternion(msg);
 		break;
+
+        case MAVLINK_MSG_ID_HIL_ARVA:
+		handle_message_hil_arva(msg);
+		break;
 	}
+}
+
+void Simulator::handle_message_hil_arva(const mavlink_message_t *msg)
+{
+	mavlink_hil_arva_t hil_arva;
+	mavlink_msg_hil_arva_decode(msg, &hil_arva);
+	publish_arva_topic(&hil_arva);
 }
 
 void Simulator::handle_message_distance_sensor(const mavlink_message_t *msg)
@@ -1111,6 +1122,20 @@ int Simulator::publish_distance_topic(const mavlink_distance_sensor_t *dist_mavl
 
 	int dist_multi;
 	orb_publish_auto(ORB_ID(distance_sensor), &_dist_pub, &dist, &dist_multi, ORB_PRIO_HIGH);
+
+	return OK;
+}
+
+int Simulator::publish_arva_topic(const mavlink_hil_arva_t *arva_mavlink)
+{
+
+	struct sensor_arva_s arva{};
+
+	arva.timestamp = hrt_absolute_time();
+	arva.y = arva_mavlink->arva_val;
+
+	int instance_arva = 0;
+	orb_publish_auto(ORB_ID(sensor_arva), &_arva_pub, &arva, &instance_arva, ORB_PRIO_HIGH);
 
 	return OK;
 }

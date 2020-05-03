@@ -68,6 +68,7 @@
 #include <uORB/topics/vehicle_local_position.h>
 #include <uORB/topics/vehicle_odometry.h>
 #include <uORB/topics/vehicle_status.h>
+#include <uORB/topics/sensor_arva.h>
 #include <uORB/uORB.h>
 
 #include <v2.0/common/mavlink.h>
@@ -203,6 +204,7 @@ private:
 	int publish_flow_topic(const mavlink_hil_optical_flow_t *flow);
 	int publish_odometry_topic(const mavlink_message_t *odom_mavlink);
 	int publish_distance_topic(const mavlink_distance_sensor_t *dist);
+	int publish_arva_topic(const mavlink_hil_arva_t *arva_mavlink);
 
 	static Simulator *_instance;
 
@@ -222,6 +224,7 @@ private:
 	orb_advert_t _battery_pub{nullptr};
 	orb_advert_t _differential_pressure_pub{nullptr};
 	orb_advert_t _dist_pub{nullptr};
+	orb_advert_t _arva_pub{nullptr};
 	orb_advert_t _flow_pub{nullptr};
 	orb_advert_t _irlock_report_pub{nullptr};
 	orb_advert_t _visual_odometry_pub{nullptr};
@@ -255,6 +258,7 @@ private:
 	void handle_message_optical_flow(const mavlink_message_t *msg);
 	void handle_message_rc_channels(const mavlink_message_t *msg);
 	void handle_message_vision_position_estimate(const mavlink_message_t *msg);
+	void handle_message_hil_arva(const mavlink_message_t *msg);
 
 	void parameters_update(bool force);
 	void poll_topics();
