@@ -3,7 +3,7 @@
  * May, 2020
  */
 
-#include "extremum_seeking.h"
+#include "extremum_seeking.hpp"
 
 // ** ExSeeking Class ** //
 // Constructor
@@ -233,7 +233,11 @@ void ESModule::run(){
 		// Publish
 		_pos_sp_triplet_pub.publish(_pos_sp_triplet);
 
-		std::cout << y << std::endl;
+		// For Debug Purpose --> Publish ARVA Value in Console (At Its Frequency)
+		if(abs(y - oldY) > 0.0){
+			std::cout << y << std::endl;
+			oldY = y;
+		}
 	}
 }
 

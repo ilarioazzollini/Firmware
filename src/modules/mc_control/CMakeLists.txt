@@ -32,14 +32,17 @@
 ############################################################################
 
 add_subdirectory(Takeoff)
+add_subdirectory(AttitudeControl)
+add_subdirectory(RateControl)
 
 px4_add_module(
-	MODULE modules__mc_pos_control
-	MAIN mc_pos_control
+	MODULE modules__mc_control
+	MAIN mc_control
+	STACK_MAX 3500
 	COMPILE_FLAGS
 		-Wno-implicit-fallthrough # TODO: fix and remove
 	SRCS
-		mc_pos_control_main.cpp
+		mc_control_main.cpp
 		PositionControl.cpp
 		Utility/ControlMath.cpp
 	DEPENDS
@@ -50,4 +53,10 @@ px4_add_module(
 		WeatherVane
 		CollisionPrevention
 		Takeoff
+		circuit_breaker
+		conversion
+		mathlib
+		AttitudeControl
+		RateControl
+		px4_work_queue
 	)

@@ -5,7 +5,6 @@
 
 #pragma once
 
-
 #include <px4_module.h>
 #include <px4_module_params.h>
 
@@ -96,7 +95,7 @@ class ESModule : public ModuleBase<ESModule>, public ModuleParams{
 		ExSeeking* _ref_gen;
 		uav_state _state;
 		int _local_pos_sub, _arva_sub;
-		double y = 0.0;
+		double y = 0.0, oldY = 0.0;
 
 		// Subscriptions
 		uORB::Subscription						 _parameter_update_sub{ORB_ID(parameter_update)};
