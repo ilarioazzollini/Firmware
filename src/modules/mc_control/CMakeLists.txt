@@ -34,6 +34,7 @@
 add_subdirectory(Takeoff)
 add_subdirectory(AttitudeControl)
 add_subdirectory(RateControl)
+add_subdirectory(IMBControl)
 
 px4_add_module(
 	MODULE modules__mc_control
@@ -58,5 +59,6 @@ px4_add_module(
 		mathlib
 		AttitudeControl
 		RateControl
+		IMBControl
 		px4_work_queue
 	)

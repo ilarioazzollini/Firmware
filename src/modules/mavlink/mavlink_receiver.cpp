@@ -273,6 +273,10 @@ MavlinkReceiver::handle_message(mavlink_message_t *msg)
 			handle_message_hil_optical_flow(msg);
 			break;
 
+		case MAVLINK_MSG_ID_HIL_ARVA:
+			handle_message_hil_arva(msg);
+			break;
+
 		default:
 			break;
 		}
@@ -596,6 +600,18 @@ MavlinkReceiver::handle_message_optical_flow_rad(mavlink_message_t *msg)
 
 		_flow_distance_sensor_pub.publish(d);
 	}
+}
+
+void
+MavlinkReceiver::handle_message_hil_arva(mavlink_message_t *msg)
+{
+	mavlink_hil_arva_t hil_arva;
+	mavlink_msg_hil_arva_decode(msg, &hil_arva);
+
+	struct sensor_arva_s arva{};
+	arva.timestamp = hrt_absolute_time();
+	arva.y = hil_arva.arva_val;
+	_arva_pub.publish(arva);
 }
 
 void
