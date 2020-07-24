@@ -559,6 +559,7 @@ void Logger::add_default_topics()
 	add_topic_multi("telemetry_status");
 	add_topic_multi("vehicle_gps_position");
 	add_topic_multi("wind_estimate", 200);
+	add_topic_multi("freq_control", 200);
 
 #ifdef CONFIG_ARCH_BOARD_PX4_SITL
 

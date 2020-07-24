@@ -1,8 +1,8 @@
-//
-
 #pragma once
 
 #include <matrix/matrix/math.hpp>
+
+typedef enum{ONE, TWO, THREE, FOUR, FIVE, SIX} gainSchedulingState;
 
 class IMBControl{
     public:
@@ -17,7 +17,7 @@ class IMBControl{
 
     // Update Control Law
     matrix::Matrix<double, 4, 1> update(matrix::Matrix<double, 12, 1> actualState,
-                                        matrix::Matrix<double, 3, 1> setPoint);
+                                        matrix::Matrix<double, 3, 1> setPoint, double dt);
 
     // Reset
     void reset();
@@ -25,7 +25,9 @@ class IMBControl{
     private:
     /* Attributes */
     matrix::Matrix<double, 3, 1> zRoll, zPitch;
-    double zV;
+    double zV = 0.0;
+    
+    //gainSchedulingState _state;
 
     // Roll Controller
     double rollCtrl(double y, double yDot, double phi, double phiDot, double yRef);

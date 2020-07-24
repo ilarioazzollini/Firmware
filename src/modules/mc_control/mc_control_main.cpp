@@ -55,8 +55,13 @@ void MulticopterControl::Run(){
 	// Run Controller at Frequency Defined Previously - NB: Updating Frequency Should Be > 200Hz
 	// Update on GYRO Update 
 	actualTime = hrt_absolute_time();
-	if(actualTime - previousTime >= 3999){
-		previousTime = actualTime;
+	double dt = actualTime - previousTime;
+	previousTime = actualTime;
+	
+	_freq.freq = dt;
+	_freq.timestamp = actualTime;
+	_freq_pub.publish(_freq);
+
 	//if (_vehicle_angular_velocity_sub.update(&angular_velocity)){
 		// Check Immediately Topics and Parameters Update
 		_vehicle_angular_velocity_sub.update(&angular_velocity);
@@ -272,12 +277,12 @@ void MulticopterControl::Run(){
 			_errors_pub.publish(_errors);
 
 			// Update Control
-			matrix::Matrix<double, 4, 1> controlAction = _IMBControl.update(actualState, poseSetPoint);
+			matrix::Matrix<double, 4, 1> controlAction = _IMBControl.update(actualState, poseSetPoint, dt);
 
-			//controlAction(0,0) /= 4;
+			//controlAction(0,0) /= 7;
 			//controlAction(1,0) /= 4;
 			//controlAction(2,0) /= 4;
-			controlAction(3,0) /= 27.15;
+			controlAction(3,0) /= 27.15; //27.15;
 
 			if(controlAction(0,0) > 0){
 				_att_control(0) = controlAction(0,0)>1 ? 1.0 : controlAction(0,0);
@@ -369,7 +374,6 @@ void MulticopterControl::Run(){
 			_vel_y_deriv.reset();
 			_vel_z_deriv.reset();
 		}
-	}
 
 	perf_end(_cycle_perf);
 }

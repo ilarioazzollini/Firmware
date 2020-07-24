@@ -55,6 +55,7 @@
 #include <uORB/topics/actuator_controls.h>
 #include <uORB/topics/actuator_outputs.h>
 #include <uORB/topics/tracking_errors.h>
+#include <uORB/topics/freq_control.h>
 
 #include "PositionControl.hpp"
 #include "Utility/ControlMath.hpp"
@@ -120,6 +121,7 @@ private:
 	struct vehicle_angular_velocity_s 	angular_velocity{};
     struct vehicle_attitude_s 			att{};
 	struct tracking_errors_s			_errors{};
+	struct freq_control_s				_freq{};
 
 	struct vehicle_land_detected_s _vehicle_land_detected = {
 		.timestamp = 0,
@@ -233,6 +235,7 @@ private:
 
 	// uORB Definitions
 	uORB::Publication<landing_gear_s>						_landing_gear_pub{ORB_ID(landing_gear)};
+	uORB::Publication<freq_control_s>						_freq_pub{ORB_ID(freq_control)};
 	uORB::Publication<vehicle_local_position_setpoint_s>	_local_pos_sp_pub{ORB_ID(vehicle_local_position_setpoint)};
 	uORB::Publication<vehicle_local_position_setpoint_s>	_traj_sp_pub{ORB_ID(trajectory_setpoint)};
 	uORB::Publication<tracking_errors_s>					_errors_pub{ORB_ID(tracking_errors)};
