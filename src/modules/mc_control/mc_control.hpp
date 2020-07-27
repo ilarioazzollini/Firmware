@@ -13,7 +13,6 @@
 #include <mathlib/math/Functions.hpp>
 #include <matrix/matrix/math.hpp>
 #include <float.h>
-#include <iostream>
 
 #include <lib/controllib/blocks.hpp>
 #include <lib/FlightTasks/FlightTasks.hpp>
@@ -54,12 +53,16 @@
 #include <uORB/topics/vehicle_angular_velocity.h>
 #include <uORB/topics/vehicle_attitude.h>
 #include <uORB/topics/actuator_controls.h>
+#include <uORB/topics/actuator_outputs.h>
+#include <uORB/topics/tracking_errors.h>
+#include <uORB/topics/freq_control.h>
 
 #include "PositionControl.hpp"
 #include "Utility/ControlMath.hpp"
 #include "Takeoff.hpp"
 #include "AttitudeControl/AttitudeControl.hpp"
 #include "RateControl/RateControl.hpp"
+#include "IMBControl/IMBControl.hpp"
 
 using namespace time_literals;
 
@@ -98,6 +101,8 @@ private:
 	AttitudeControl _attitude_control; 		// Core of Attitude PID Control
 	RateControl _rate_control; 				// Core of Rate PID Control
 
+	IMBControl _IMBControl;					// Internal Model Based Control
+
 	MultirotorMixer::saturation_status _saturation_status{};
 	systemlib::Hysteresis _failsafe_land_hysteresis{false};
 	WeatherVane *_wv_controller{nullptr};
@@ -115,6 +120,8 @@ private:
     struct battery_status_s				_battery_status{};
 	struct vehicle_angular_velocity_s 	angular_velocity{};
     struct vehicle_attitude_s 			att{};
+	struct tracking_errors_s			_errors{};
+	struct freq_control_s				_freq{};
 
 	struct vehicle_land_detected_s _vehicle_land_detected = {
 		.timestamp = 0,
@@ -133,10 +140,14 @@ private:
 	hrt_abstime _last_warn{0};
 	hrt_abstime _task_start{hrt_absolute_time()};
 
+	hrt_abstime actualTime{hrt_absolute_time()};
+	hrt_abstime previousTime{hrt_absolute_time()};
+
 	bool _in_failsafe{false};
 	bool _actuators_0_circuit_breaker_enabled{false};
 
 	float _thrust_sp{0.0f};
+	float _thrust_sp1{0.0f};
 	float _loop_update_rate_hz{initial_update_rate_hz};
 	float _dt_accumulator{0.0f};
 	float _man_yaw_sp{0.f};
@@ -146,6 +157,7 @@ private:
 	int8_t _old_landing_gear_position{landing_gear_s::GEAR_KEEP};
 
     matrix::Vector3f _att_control;
+	matrix::Vector3f _att_control1;
 	matrix::Vector3f _rates_sp;
 	// ******************************************************************************* //
 
@@ -223,10 +235,13 @@ private:
 
 	// uORB Definitions
 	uORB::Publication<landing_gear_s>						_landing_gear_pub{ORB_ID(landing_gear)};
+	uORB::Publication<freq_control_s>						_freq_pub{ORB_ID(freq_control)};
 	uORB::Publication<vehicle_local_position_setpoint_s>	_local_pos_sp_pub{ORB_ID(vehicle_local_position_setpoint)};
 	uORB::Publication<vehicle_local_position_setpoint_s>	_traj_sp_pub{ORB_ID(trajectory_setpoint)};
+	uORB::Publication<tracking_errors_s>					_errors_pub{ORB_ID(tracking_errors)};
     uORB::PublicationMulti<rate_ctrl_status_s>				_controller_status_pub{ORB_ID(rate_ctrl_status), ORB_PRIO_DEFAULT};
     uORB::PublicationQueued<vehicle_command_s> 				_pub_vehicle_command{ORB_ID(vehicle_command)};
+	uORB::PublicationMulti<actuator_outputs_s> _outputs_pub{ORB_ID(actuator_outputs), ORB_PRIO_DEFAULT};
 	
 	uORB::SubscriptionCallbackWorkItem _vehicle_angular_velocity_sub{this, ORB_ID(vehicle_angular_velocity)};
 

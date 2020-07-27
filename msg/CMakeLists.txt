@@ -149,6 +149,8 @@ set(msg_files
 	wheel_encoders.msg
 	wind_estimate.msg
 	sensor_arva.msg
+	tracking_errors.msg
+	freq_control.msg
 	)
 
 if(NOT EXTERNAL_MODULES_LOCATION STREQUAL "")

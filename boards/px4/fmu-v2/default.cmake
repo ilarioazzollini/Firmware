@@ -77,14 +77,16 @@ px4_add_board(
 		#local_position_estimator
 		logger
 		mavlink
-		mc_att_control
-		mc_pos_control
+		#mc_att_control
+		#mc_pos_control
 		navigator
 		battery_status
 		sensors
 		vmount
 		vtol_att_control
 		#airspeed_selector
+		extremum_seeking
+		mc_control
 
 	SYSTEMCMDS
 		bl_update
