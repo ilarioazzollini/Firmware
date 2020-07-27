@@ -203,6 +203,9 @@ void ESModule::run(){
 
 		// Update at Wanted Frequency
 		if(actualTime - previousTime >= ((double)1/FREQ)*1e6){
+			_freq.freq = actualTime - previousTime;
+			_freq.timestamp = actualTime;
+			_freq_pub.publish(_freq);
 			previousTime = actualTime;
 
 			// Update Info from Topics

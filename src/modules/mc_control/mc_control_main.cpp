@@ -60,7 +60,7 @@ void MulticopterControl::Run(){
 	
 	_freq.freq = dt;
 	_freq.timestamp = actualTime;
-	_freq_pub.publish(_freq);
+	//_freq_pub.publish(_freq);
 
 	//if (_vehicle_angular_velocity_sub.update(&angular_velocity)){
 		// Check Immediately Topics and Parameters Update

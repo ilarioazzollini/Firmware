@@ -20,6 +20,7 @@
 #include <uORB/topics/sensor_arva.h>
 #include <uORB/topics/offboard_control_mode.h>
 #include <uORB/topics/vehicle_control_mode.h>
+#include <uORB/topics/freq_control.h>
 #include <uORB/uORB.h>
 
 #include "px4_custom_mode.h"
@@ -29,7 +30,7 @@
 
 #define Z_REF 5
 #define EPSILON 0.1
-#define FREQ 20
+#define FREQ 50
 
 /** Extremum Seeking Parameters **/
 // For 17Hz
@@ -49,38 +50,16 @@
 #define OMEGA 0.65
 
 /** Bounded Update Rate ES Parameters **/
-// For 17Hz
- 
-/*
-// TF: 1/50s+1
-#define FA_BUR 0.9989
-#define FB_BUR 0.0312
-#define FC_BUR 0.0358
-#define FD_BUR 5.5969e-04*/
-
-/*
-// TF: 1/20s+1
-#define FA_BUR 0.9972
-#define FB_BUR 0.0625
-#define FC_BUR 0.0447
-#define FD_BUR 0.0014*/
-
-/*
-// TF: 1/30s+1
-#define FA_BUR 0.9981
-#define FB_BUR 0.0312
-#define FC_BUR 0.0596
-#define FD_BUR 9.3246e-4*/
-
+// For 50Hz
 // TF: 1/10s+1
-#define FA_BUR 0.9944
+#define FA_BUR 0.9980
 #define FB_BUR 0.0625
-#define FC_BUR 0.0891
-#define FD_BUR 0.0028
+#define FC_BUR 0.0319
+#define FD_BUR 9.99e-4
 
 #define OMEGA_BUR 0.65
 #define ALPHA_BUR 10
-#define KAPPA_BUR 0.05 // Should be 0.05 < K < 0.1
+#define KAPPA_BUR 0.06 // Should be 0.05 < K < 0.1
 
 typedef enum{TAKEOFF, SEARCH} uav_state;
 
@@ -161,6 +140,7 @@ class ESModule : public ModuleBase<ESModule>, public ModuleParams{
 		struct sensor_arva_s			 	_sens_arva;
 		struct position_setpoint_triplet_s	_pos_sp_triplet;
 		struct vehicle_command_s 			_vcmd;
+		struct freq_control_s				_freq;
 
 		// Subscriptions
 		uORB::Subscription						 _parameter_update_sub{ORB_ID(parameter_update)};
@@ -173,5 +153,6 @@ class ESModule : public ModuleBase<ESModule>, public ModuleParams{
 		uORB::Publication<position_setpoint_triplet_s> 	_pos_sp_triplet_pub{ORB_ID(position_setpoint_triplet)};
 		uORB::Publication<offboard_control_mode_s>		_offboard_control_mode_pub{ORB_ID(offboard_control_mode)};
 		uORB::PublicationQueued<vehicle_command_s> 		_cmd_pub{ORB_ID(vehicle_command)};
+		uORB::Publication<freq_control_s>				_freq_pub{ORB_ID(freq_control)};
 };
 
